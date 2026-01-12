@@ -1,7 +1,7 @@
 import { io } from 'socket.io-client';
 import * as fabric from 'fabric';
 import { nanoid } from 'nanoid';
-import { ARABIC_LETTERS } from './arabicLetters';
+import { ARABIC_LETTERS, HARAKAT } from './arabicLetters';
 
 const socket = io(
   import.meta.env.PROD
@@ -18,13 +18,17 @@ const joinBoardBtn = document.getElementById('join-board-btn');
 const boardCodeInput = document.getElementById('board-code-input');
 const displayBoardCode = document.getElementById('display-board-code');
 const lettersList = document.getElementById('letters-list');
+const harakatList = document.getElementById('harakat-list');
 const shapesPanel = document.getElementById('shapes-panel');
 const shapesList = document.getElementById('shapes-list');
 const closeShapesBtn = document.getElementById('close-shapes');
 const selectModeBtn = document.getElementById('select-mode');
 const drawModeBtn = document.getElementById('draw-mode');
+const eraserModeBtn = document.getElementById('eraser-mode');
 const clearBoardBtn = document.getElementById('clear-board');
 const copyLinkBtn = document.getElementById('copy-link');
+
+let isEraserMode = false;
 
 function initCanvas() {
   const container = document.getElementById('canvas-container');
@@ -78,6 +82,28 @@ function initCanvas() {
       objectData: obj.toObject(['id'])
     });
   });
+
+  canvas.on('mouse:down', (e) => {
+    if (isEraserMode) {
+      erasePathAtEvent(e);
+    }
+  });
+
+  canvas.on('mouse:move', (e) => {
+    if (isEraserMode && e.e.buttons === 1) {
+      erasePathAtEvent(e);
+    }
+  });
+
+  function erasePathAtEvent(e) {
+    const target = e.target || canvas.findTarget(e.e);
+    if (target && target.type === 'path') {
+      const objectId = target.id;
+      canvas.remove(target);
+      canvas.renderAll();
+      socket.emit('remove-object', { boardId: currentBoardId, objectId });
+    }
+  }
 }
 
 function joinBoard(boardId) {
@@ -129,6 +155,17 @@ if (lettersList) {
   });
 }
 
+// Harakat UI
+if (harakatList) {
+  HARAKAT.forEach(h => {
+    const div = document.createElement('div');
+    div.className = 'letter-item';
+    div.innerText = h.display;
+    div.addEventListener('click', () => addLetterToCanvas(h.char, 50));
+    harakatList.appendChild(div);
+  });
+}
+
 function showShapes(letter) {
   if (!shapesList || !shapesPanel) return;
   shapesList.innerHTML = '';
@@ -148,35 +185,55 @@ if (closeShapesBtn) {
   });
 }
 
-function addLetterToCanvas(char) {
+function addLetterToCanvas(char, fontSize = 80) {
   if (!canvas) return;
+  const isSelectMode = !canvas.isDrawingMode && !isEraserMode;
   const text = new fabric.FabricText(char, {
     left: 100,
     top: 100,
-    fontSize: 80,
+    fontSize: fontSize,
     fontFamily: 'Arial',
     id: nanoid(),
+    selectable: isSelectMode,
   });
   canvas.add(text);
-  canvas.setActiveObject(text);
+  if (isSelectMode) canvas.setActiveObject(text);
 }
 
 if (selectModeBtn) {
-  selectModeBtn.addEventListener('click', () => {
-    if (!canvas) return;
-    canvas.isDrawingMode = false;
-    selectModeBtn.classList.add('active');
-    drawModeBtn.classList.remove('active');
-  });
+  selectModeBtn.addEventListener('click', () => setMode('select'));
 }
 
 if (drawModeBtn) {
-  drawModeBtn.addEventListener('click', () => {
-    if (!canvas) return;
-    canvas.isDrawingMode = true;
-    selectModeBtn.classList.remove('active');
-    drawModeBtn.classList.add('active');
+  drawModeBtn.addEventListener('click', () => setMode('draw'));
+}
+
+if (eraserModeBtn) {
+  eraserModeBtn.addEventListener('click', () => setMode('eraser'));
+}
+
+function setMode(mode) {
+  if (!canvas) return;
+  
+  isEraserMode = (mode === 'eraser');
+  canvas.isDrawingMode = (mode === 'draw');
+  
+  selectModeBtn.classList.toggle('active', mode === 'select');
+  drawModeBtn.classList.toggle('active', mode === 'draw');
+  eraserModeBtn.classList.toggle('active', mode === 'eraser');
+  
+  canvas.selection = (mode === 'select');
+  canvas.defaultCursor = (mode === 'select' ? 'default' : 'crosshair');
+  
+  canvas.forEachObject(obj => {
+    obj.selectable = (mode === 'select');
   });
+  
+  if (mode !== 'select') {
+    canvas.discardActiveObject();
+  }
+  
+  canvas.renderAll();
 }
 
 if (clearBoardBtn) {
@@ -198,10 +255,12 @@ if (copyLinkBtn) {
 socket.on('init-state', (state) => {
   if (!canvas) return;
   canvas.clear();
+  const isSelectMode = !canvas.isDrawingMode && !isEraserMode;
   if (state.objects && state.objects.length > 0) {
     fabric.util.enlivenObjects(state.objects).then((objects) => {
       objects.forEach(obj => {
         obj.remote = true;
+        obj.selectable = isSelectMode;
         canvas.add(obj);
       });
       canvas.renderAll();
@@ -214,6 +273,7 @@ socket.on('object-added', (objectData) => {
   fabric.util.enlivenObjects([objectData]).then((objects) => {
     const obj = objects[0];
     obj.remote = true;
+    obj.selectable = !canvas.isDrawingMode && !isEraserMode;
     canvas.add(obj);
     canvas.renderAll();
   });
@@ -225,6 +285,15 @@ socket.on('object-moved', (objectData) => {
   if (obj) {
     obj.set(objectData);
     obj.setCoords();
+    canvas.renderAll();
+  }
+});
+
+socket.on('object-removed', (objectId) => {
+  if (!canvas) return;
+  const obj = canvas.getObjects().find(o => o.id === objectId);
+  if (obj) {
+    canvas.remove(obj);
     canvas.renderAll();
   }
 });

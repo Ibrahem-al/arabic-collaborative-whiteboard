@@ -29,3 +29,14 @@ export const ARABIC_LETTERS = [
   { name: 'Ya', display: 'ي', shapes: ['ي', 'يـ', 'ـيـ', 'ـي', 'ئ', 'ئـ', 'ـئـ', 'ـئ'] },
   { name: 'Hamza', display: 'ء', shapes: ['ء'] },
 ];
+
+export const HARAKAT = [
+  { name: 'Fatha', display: '◌َ', char: 'َ' },
+  { name: 'Damma', display: '◌ُ', char: 'ُ' },
+  { name: 'Kasra', display: '◌ِ', char: 'ِ' },
+  { name: 'Sukun', display: '◌ْ', char: 'ْ' },
+  { name: 'Shadda', display: '◌ّ', char: 'ّ' },
+  { name: 'Tanwin Fatha', display: '◌ً', char: 'ً' },
+  { name: 'Tanwin Damma', display: '◌ٌ', char: 'ٌ' },
+  { name: 'Tanwin Kasra', display: '◌ٍ', char: 'ٍ' },
+];

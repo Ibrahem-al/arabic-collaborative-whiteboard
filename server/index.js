@@ -51,6 +51,13 @@ io.on('connection', (socket) => {
     }
   });
 
+  socket.on('remove-object', ({ boardId, objectId }) => {
+    if (boards[boardId]) {
+      boards[boardId].objects = boards[boardId].objects.filter(o => o.id !== objectId);
+      socket.to(boardId).emit('object-removed', objectId);
+    }
+  });
+
   socket.on('clear-board', (boardId) => {
     if (boards[boardId]) {
       boards[boardId].objects = [];

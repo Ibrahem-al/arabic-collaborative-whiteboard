@@ -34,13 +34,21 @@ body {
   flex-direction: column;
   position: relative;
   direction: rtl;
+  overflow-y: auto;
+}
+
+.sidebar h3 {
+  margin: 15px 0 10px 0;
+  font-size: 18px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 5px;
 }
 
 .letters-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 10px;
-  overflow-y: auto;
+  margin-bottom: 10px;
 }
 
 .shapes-grid {
