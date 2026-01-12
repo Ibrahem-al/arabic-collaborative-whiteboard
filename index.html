@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/webstorm-icon-logo.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WS playground</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div id="join-screen">
+  <h1>Arabic Letter Whiteboard</h1>
+  <button id="create-board">Create New Board</button>
+  <div class="join-container">
+    <input type="text" id="board-code-input" placeholder="Enter Board Code">
+    <button id="join-board-btn">Join Board</button>
+  </div>
+</div>
+
+<div id="whiteboard-screen" style="display: none;">
+  <div class="sidebar">
+    <h3>Arabic Letters</h3>
+    <div id="letters-list" class="letters-grid"></div>
+    <div id="shapes-panel" class="shapes-panel" style="display: none;">
+      <button id="close-shapes">×</button>
+      <div id="shapes-list" class="shapes-grid"></div>
+    </div>
+  </div>
+
+  <div class="main-content">
+    <div class="toolbar">
+      <button id="select-mode" class="active">Select/Move</button>
+      <button id="draw-mode">Draw</button>
+      <button id="clear-board">Clear Board</button>
+      <div class="board-info">
+        Board Code: <span id="display-board-code"></span>
+        <button id="copy-link">Copy Link</button>
+      </div>
+    </div>
+    <div id="canvas-container">
+      <canvas id="whiteboard"></canvas>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>
