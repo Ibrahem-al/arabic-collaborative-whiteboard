@@ -3,7 +3,11 @@ import * as fabric from 'fabric';
 import { nanoid } from 'nanoid';
 import { ARABIC_LETTERS } from './arabicLetters';
 
-const socket = io('http://localhost:3001');
+const socket = io(
+  import.meta.env.PROD
+    ? 'https://arabic-collaborative-whiteboard-2.onrender.com'
+    : 'http://localhost:3001',
+);
 let canvas;
 let currentBoardId = null;
 
