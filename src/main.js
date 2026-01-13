@@ -176,12 +176,12 @@ function showShapes(letter) {
     div.addEventListener('click', () => addLetterToCanvas(shape));
     shapesList.appendChild(div);
   });
-  shapesPanel.style.display = 'block';
+  shapesPanel.classList.add('open');
 }
 
 if (closeShapesBtn) {
   closeShapesBtn.addEventListener('click', () => {
-    if (shapesPanel) shapesPanel.style.display = 'none';
+    if (shapesPanel) shapesPanel.classList.remove('open');
   });
 }
 
@@ -192,7 +192,7 @@ function addLetterToCanvas(char, fontSize = 80) {
     left: 100,
     top: 100,
     fontSize: fontSize,
-    fontFamily: 'Arial',
+    fontFamily: 'Noto Sans Arabic',
     id: nanoid(),
     selectable: isSelectMode,
   });
@@ -246,7 +246,11 @@ if (copyLinkBtn) {
   copyLinkBtn.addEventListener('click', () => {
     const link = window.location.href;
     navigator.clipboard.writeText(link).then(() => {
-      alert('Link copied to clipboard!');
+      const originalText = copyLinkBtn.innerText;
+      copyLinkBtn.innerText = '✅';
+      setTimeout(() => {
+        copyLinkBtn.innerText = originalText;
+      }, 2000);
     });
   });
 }

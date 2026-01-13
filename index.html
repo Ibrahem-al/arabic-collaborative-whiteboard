@@ -4,45 +4,81 @@
   <meta charset="UTF-8" />
   <link rel="icon" type="image/svg+xml" href="/webstorm-icon-logo.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WS playground</title>
+  <title>Arabic Letter Whiteboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
 <div id="join-screen">
-  <h1>Arabic Letter Whiteboard</h1>
-  <button id="create-board">Create New Board</button>
-  <div class="join-container">
-    <input type="text" id="board-code-input" placeholder="Enter Board Code">
-    <button id="join-board-btn">Join Board</button>
+  <div class="join-card">
+    <h1>Arabic Letter Whiteboard</h1>
+    <p class="subtitle">Collaborative space for learning and practice</p>
+    
+    <div class="join-actions">
+      <button id="create-board" class="btn-primary large">Create New Board</button>
+      
+      <div class="divider">
+        <span>OR</span>
+      </div>
+      
+      <div class="join-container">
+        <input type="text" id="board-code-input" placeholder="Enter Board Code">
+        <button id="join-board-btn" class="btn-secondary">Join Board</button>
+      </div>
+    </div>
   </div>
 </div>
 
 <div id="whiteboard-screen" style="display: none;">
   <div class="sidebar">
-    <h3>Arabic Letters</h3>
+    <div class="sidebar-header">
+      <h3>Arabic Letters</h3>
+    </div>
     <div id="letters-list" class="letters-grid"></div>
-    <h3>Harakat</h3>
+    
+    <div class="sidebar-header">
+      <h3>Harakat</h3>
+    </div>
     <div id="harakat-list" class="letters-grid"></div>
-    <div id="shapes-panel" class="shapes-panel" style="display: none;">
-      <button id="close-shapes">×</button>
+    
+    <div id="shapes-panel" class="shapes-panel">
+      <div class="shapes-panel-header">
+        <h4>Shapes</h4>
+        <button id="close-shapes" title="Close">×</button>
+      </div>
       <div id="shapes-list" class="shapes-grid"></div>
     </div>
   </div>
 
   <div class="main-content">
-    <div class="toolbar">
-      <button id="select-mode" class="active">Select/Move</button>
-      <button id="draw-mode">Draw</button>
-      <button id="eraser-mode">Eraser</button>
-      <button id="clear-board">Clear Board</button>
-      <div class="board-info">
-        Board Code: <span id="display-board-code"></span>
-        <button id="copy-link">Copy Link</button>
+    <header class="toolbar">
+      <div class="mode-switcher">
+        <button id="select-mode" class="btn-tool active" title="Select/Move">
+          <span class="icon">↗</span> Select
+        </button>
+        <button id="draw-mode" class="btn-tool" title="Draw">
+          <span class="icon">✎</span> Draw
+        </button>
+        <button id="eraser-mode" class="btn-tool" title="Eraser">
+          <span class="icon">⌫</span> Eraser
+        </button>
       </div>
-    </div>
-    <div id="canvas-container">
+      
+      <div class="toolbar-divider"></div>
+      
+      <button id="clear-board" class="btn-danger">Clear Board</button>
+      
+      <div class="board-info">
+        <span class="code-label">Board Code:</span>
+        <code id="display-board-code"></code>
+        <button id="copy-link" class="btn-icon" title="Copy Invite Link">🔗</button>
+      </div>
+    </header>
+    <main id="canvas-container">
       <canvas id="whiteboard"></canvas>
-    </div>
+    </main>
   </div>
 </div>
 
